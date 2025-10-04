@@ -63,7 +63,7 @@ section h3 {
 #pokemon-list > li:only-child {
   grid-column: 1 / -1;
   justify-self: center;
-  width: 150px;
+  width: 220px;
 }
 
 .pokemon-card {
@@ -93,7 +93,100 @@ section h3 {
   transform: scale(1.1);
 }
 
+.pokemon-card h5 {
+  font-size: 0.5rem;
+  margin: 0.5rem;
+  color: rgb(53, 53, 53);
+}
+
 .pokemon-card h2 {
   font-size: 0.6rem;
   margin: 0.5rem;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  margin: auto;
+  padding: 3rem;
+  border-radius: 12px;
+  background: #ffefe2;
+}
+
+.modal-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.modal-header img {
+  max-width: 120px;
+  height: auto;
+  margin-bottom: 0.5rem;
+}
+
+.modal-info {
+  text-align: left;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+}
+
+.modal h3 {
+  margin: 0;
+}
+
+.modal h4 {
+  margin: 0.5rem;
+}
+
+.modal p {
+  padding: 0.1rem 0;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.25rem 1rem;
+  font-size: 0.8rem;
+  text-align: left;
+}
+
+.stat-name {
+  font-weight: bold;
+  text-align: left;
+}
+
+.stat-value {
+  text-align: left;
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.close:hover {
+  color: #e74c3c;
+}
+
+.hidden {
+  display: none;
 }
