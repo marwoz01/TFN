@@ -1,0 +1,51 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Press Start 2P", system-ui;
+  background: #faf5ce;
+  color: #040209;
+  text-align: center;
+}
+
+.container {
+  width: 90%;
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+header h1 {
+  margin: 2rem;
+  text-decoration: underline;
+}
+
+.search-bar {
+  display: flex;
+}
+
+.search {
+  max-width: 250px;
+  padding: 1rem;
+  box-shadow: 3px 3px 0px #000;
+  border: 1px solid #000;
+  font-family: inherit;
+}
+
+header input {
+  border-radius: 12px 0 0 12px;
+}
+
+header button {
+  border-radius: 0 12px 12px 0;
+  cursor: pointer;
+}
+
+section h3 {
+  margin: 2rem;
+}
