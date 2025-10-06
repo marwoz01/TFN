@@ -11,7 +11,7 @@ GithubPages: (https://marwoz01.github.io/TFN/01-GameDex/)
 ## Funkcjonalności
 - Pobieranie danych z [PokeAPI](https://pokeapi.co/).  
 - Dynamiczne renderowanie listy Pokémonów w siatce.  
-- Wyszukiwanie po nazwie (np. *pikachu*, *charizard*).  
+- Wyszukiwanie po nazwie.  
 - Modal z detalami i statystykami.  
 - Responsywny design.  
 
