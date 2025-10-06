@@ -6,66 +6,6 @@ const modalContent = document.getElementById("modal-content");
 const closeBtn = document.getElementById("close-btn");
 const modalBody = document.getElementById("modal-body");
 
-// Otwarcie modala
-pokemonUl.addEventListener("click", async (e) => {
-  const card = e.target.closest(".pokemon-card");
-  if (!card) return;
-  const id = card.dataset.id;
-  const imgUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
-  const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
-  modal.classList.remove("hidden");
-  modalBody.innerHTML = "Ładowanie…";
-  if (!response.ok) {
-    modalBody.textContent = "Nie udało się pobrać szczegółów.";
-    return;
-  }
-  const data = await response.json();
-
-  const statsGrid = data.stats
-    .map(
-      (s) => `
-    <div class="stat-name">${s.stat.name.toUpperCase()}</div>
-    <div class="stat-value">${s.base_stat}</div>
-  `
-    )
-    .join("");
-
-  setTimeout(() => {
-    modalBody.innerHTML = `
-        <div class="modal-header">
-          <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png" alt="${
-      data.name
-    }">
-          <h3>#${id} ${data.name.toUpperCase()}</h3>
-        </div>
-        <div class="modal-info">
-          <p><strong>Typ:</strong> ${data.types
-            .map((t) => t.type.name)
-            .join(", ")}</p>
-          <p><strong>Wzrost:</strong> ${data.height * 10} cm</p>
-          <p><strong>Waga:</strong> ${data.weight / 10} kg</p>
-          <p><strong>Umiejętności:</strong> ${data.abilities
-            .map((a) => a.ability.name)
-            .join(", ")}</p>
-        </div>
-        <h4>Statystyki bazowe</h4>
-        <div class="stats-grid">${statsGrid}</div>
-      `;
-  }, 1000);
-});
-
-// Zamknięcie po kliknięciu w krzyżyk
-closeBtn.addEventListener("click", () => {
-  modal.classList.add("hidden");
-});
-
-// Zamknięcie po kliknięciu w tło
-modal.addEventListener("click", (event) => {
-  if (event.target === modal) {
-    modal.classList.add("hidden");
-  }
-});
-
 // Funkcja tworząca kartę Pokemona
 function createPokemonCard(name, id) {
   const imgUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
@@ -134,3 +74,63 @@ async function findPokemon() {
 }
 
 searchBtn.addEventListener("click", findPokemon);
+
+// Otwarcie modala
+pokemonUl.addEventListener("click", async (e) => {
+  const card = e.target.closest(".pokemon-card");
+  if (!card) return;
+  const id = card.dataset.id;
+  const imgUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
+  const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
+  modal.classList.remove("hidden");
+  modalBody.innerHTML = "Ładowanie…";
+  if (!response.ok) {
+    modalBody.textContent = "Nie udało się pobrać szczegółów.";
+    return;
+  }
+  const data = await response.json();
+
+  const statsGrid = data.stats
+    .map(
+      (s) => `
+    <div class="stat-name">${s.stat.name.toUpperCase()}</div>
+    <div class="stat-value">${s.base_stat}</div>
+  `
+    )
+    .join("");
+
+  setTimeout(() => {
+    modalBody.innerHTML = `
+        <div class="modal-header">
+          <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png" alt="${
+      data.name
+    }">
+          <h3>#${id} ${data.name.toUpperCase()}</h3>
+        </div>
+        <div class="modal-info">
+          <p><strong>Typ:</strong> ${data.types
+            .map((t) => t.type.name)
+            .join(", ")}</p>
+          <p><strong>Wzrost:</strong> ${data.height * 10} cm</p>
+          <p><strong>Waga:</strong> ${data.weight / 10} kg</p>
+          <p><strong>Umiejętności:</strong> ${data.abilities
+            .map((a) => a.ability.name)
+            .join(", ")}</p>
+        </div>
+        <h4>Statystyki bazowe</h4>
+        <div class="stats-grid">${statsGrid}</div>
+      `;
+  }, 1000);
+});
+
+// Zamknięcie po kliknięciu w krzyżyk
+closeBtn.addEventListener("click", () => {
+  modal.classList.add("hidden");
+});
+
+// Zamknięcie po kliknięciu w tło
+modal.addEventListener("click", (event) => {
+  if (event.target === modal) {
+    modal.classList.add("hidden");
+  }
+});
