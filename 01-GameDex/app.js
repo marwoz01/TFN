@@ -73,7 +73,13 @@ async function findPokemon() {
   }
 }
 
+// Wyszukiwanie
 searchBtn.addEventListener("click", findPokemon);
+searchInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.isComposing) {
+    findPokemon();
+  }
+});
 
 // Otwarcie modala
 pokemonUl.addEventListener("click", async (e) => {
