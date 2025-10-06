@@ -76,7 +76,7 @@ async function findPokemon() {
 // Wyszukiwanie
 searchBtn.addEventListener("click", findPokemon);
 searchInput.addEventListener("keydown", (e) => {
-  if (e.key === "Enter" && !e.isComposing) {
+  if (e.key === "Enter") {
     findPokemon();
   }
 });
@@ -86,7 +86,6 @@ pokemonUl.addEventListener("click", async (e) => {
   const card = e.target.closest(".pokemon-card");
   if (!card) return;
   const id = card.dataset.id;
-  const imgUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
   const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
   modal.classList.remove("hidden");
   modalBody.innerHTML = "Ładowanie…";
