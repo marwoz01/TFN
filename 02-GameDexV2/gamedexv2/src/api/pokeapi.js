@@ -10,7 +10,7 @@ export async function fetchAllPokemonList() {
     return { id, name, image };
   });
 }
-
+ 
 export async function fetchPokemonDetails(id) {
   const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
   const data = await res.json();
