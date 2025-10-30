@@ -15,4 +15,4 @@ Używa wyłącznie hooka **useState** do zarządzania stanem.
 - Tailwind CSS
 
 ## Podgląd online
-[🔗 Zobacz na GitHub Pages](https://tfn.github.io/05-library-app/library-app)
+[🔗 Zobacz Library App](https://tfn-library-app.vercel.app/)
