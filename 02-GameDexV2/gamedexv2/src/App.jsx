@@ -9,17 +9,7 @@ export default function App({
   isModalOpen,
   modalDetails,
   onCloseModal,
-  error,
-  onRetryList,
 }) {
-  if (error?.scope === "list") {
-    return (
-      <div className="error">
-        <p>{error.message}</p>
-        <button onClick={onRetryList}>Spróbuj ponownie</button>
-      </div>
-    );
-  }
   return (
     <>
       <Header onSearchSubmit={onSearchSubmit} />
