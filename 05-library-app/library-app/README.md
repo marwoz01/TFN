@@ -1,18 +1,18 @@
 # Library App
 
-Prosta aplikacja do zarządzania biblioteką stworzona w **Next.js**, **React** i **Tailwind CSS**.  
-Używa wyłącznie hooka **useState** do zarządzania stanem.
+A simple library management application built with **Next.js**, **React**, and **Tailwind CSS**.  
+It uses only the **useState** hook for state management.
 
-## Funkcje
-- Dodawanie, usuwanie i wyświetlanie książek  
-- Dodawanie i usuwanie użytkowników  
-- Wypożyczanie i zwracanie książek z walidacją dostępności  
-- Statystyki biblioteki (książki, użytkownicy, wypożyczenia)
+## Features
+- Add, remove and display books  
+- Add and remove users  
+- Borrow and return books with availability validation  
+- Library statistics (books, users, loans)
 
-## Technologie
+## Technologies
 - Next.js
 - React
 - Tailwind CSS
 
-## Podgląd online
-[🔗 Zobacz Library App](https://tfn-library-app.vercel.app/)
+## Live Preview
+[🔗 View Library App](https://tfn-library-app.vercel.app/)
