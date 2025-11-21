@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import BookForm from "../components/BookForm";
 import BookList from "../components/BookList";
 import UserForm from "../components/UserForm";
@@ -7,6 +7,7 @@ import UserList from "../components/UserList";
 import LoanManager from "../components/LoanManager";
 import Statistics from "../components/Statistics";
 import dynamic from "next/dynamic";
+
 const ToastContainer = dynamic(() => import("../components/ToastContainer"), {
   ssr: false,
 });
@@ -16,6 +17,33 @@ export default function Home() {
   const [users, setUsers] = useState([]);
   const [loans, setLoans] = useState([]);
   const [toasts, setToasts] = useState([]);
+
+  useEffect(() => {
+    const savedBooks = localStorage.getItem("library-books");
+    if (savedBooks) {
+      setBooks(JSON.parse(savedBooks));
+    }
+    const savedUsers = localStorage.getItem("library-users");
+    if (savedUsers) {
+      setUsers(JSON.parse(savedUsers));
+    }
+    const savedLoans = localStorage.getItem("library-loans");
+    if (savedLoans) {
+      setLoans(JSON.parse(savedLoans));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("library-books", JSON.stringify(books));
+  }, [books]);
+
+  useEffect(() => {
+    localStorage.setItem("library-users", JSON.stringify(users));
+  }, [users]);
+
+  useEffect(() => {
+    localStorage.setItem("library-loans", JSON.stringify(loans));
+  }, [loans]);
 
   function addToast(message, type = "success", duration = 3000) {
     setToasts((prev) => [
@@ -128,10 +156,27 @@ export default function Home() {
     addToast("Usunięto użytkownika");
   }
 
+  function handleResetData() {
+    setBooks([]);
+    setUsers([]);
+    setLoans([]);
+    addToast("Zresetowano dane biblioteki");
+    localStorage.removeItem("library-books");
+    localStorage.removeItem("library-users");
+    localStorage.removeItem("library-loans");
+  }
+
   return (
     <main className="min-h-screen bg-neutral-950 text-neutral-100">
       <div className="max-w-7xl mx-auto p-6 space-y-6">
         <Statistics books={books} users={users} loans={loans} />
+
+        <button
+          onClick={handleResetData}
+          className="px-4 py-2 rounded-lg border border-neutral-700 bg-neutral-900 hover:bg-neutral-800 text-sm"
+        >
+          Resetuj dane
+        </button>
 
         <div className="grid md:grid-cols-2 gap-6">
           <BookForm onAddBook={handleAddBook} addToast={addToast} />
