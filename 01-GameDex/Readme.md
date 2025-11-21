@@ -1,23 +1,22 @@
 # GameDex
 
-Prosta aplikacja w czystym **HTML, CSS i JavaScript**, która umożliwia:
-- przeglądanie listy pierwszych 20 Pokémonów z **PokeAPI**,
-- wyszukiwanie dowolnego Pokémona po nazwie,
-- wyświetlanie szczegółów (typ, waga, wzrost, umiejętności, statystyki) w formie **modala** po kliknięciu w kartę.
+A simple application built with pure **HTML, CSS, and JavaScript** that allows you to:
+- browse the first 20 Pokémon from **PokeAPI**,  
+- search for any Pokémon by name,  
+- display detailed info (type, weight, height, abilities, stats) in a **modal** after clicking a card.
 
 ## Demo
-GithubPages: (https://marwoz01.github.io/TFN/01-GameDex/)
+GitHub Pages: (https://marwoz01.github.io/TFN/01-GameDex/)
 
-## Funkcjonalności
-- Pobieranie danych z [PokeAPI](https://pokeapi.co/).  
-- Dynamiczne renderowanie listy Pokémonów w siatce.  
-- Wyszukiwanie po nazwie.  
-- Modal z detalami i statystykami.  
-- Responsywny design.  
+## Features
+- Fetching data from [PokeAPI](https://pokeapi.co/)  
+- Dynamic grid rendering of Pokémon cards  
+- Name-based search  
+- Modal with details and stats  
+- Responsive design  
 
-## Technologie
+## Technologies
 - **HTML5**
 - **CSS3**
 - **JavaScript**
 - **PokeAPI**
-
