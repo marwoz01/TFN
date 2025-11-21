@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import BookForm from "../components/BookForm";
 import BookList from "../components/BookList";
 import UserForm from "../components/UserForm";
@@ -17,6 +17,8 @@ export default function Home() {
   const [users, setUsers] = useState([]);
   const [loans, setLoans] = useState([]);
   const [toasts, setToasts] = useState([]);
+  const bookFormRef = useRef(null);
+  const userFormRef = useRef(null);
 
   useEffect(() => {
     const savedBooks = localStorage.getItem("library-books");
@@ -111,6 +113,10 @@ export default function Home() {
     };
     setBooks((prev) => [newBook, ...prev]);
     addToast("Dodano książkę");
+    if (bookFormRef.current) {
+      bookFormRef.current.reset();
+      bookFormRef.current.focusFirst();
+    }
   }
 
   function handleDeleteBook(bookId) {
@@ -141,6 +147,10 @@ export default function Home() {
     };
     setUsers((prev) => [newUser, ...prev]);
     addToast("Dodano użytkownika");
+    if (userFormRef.current) {
+      userFormRef.current.reset();
+      userFormRef.current.focusFirst();
+    }
   }
 
   function handleDeleteUser(userId) {
@@ -179,12 +189,19 @@ export default function Home() {
         </button>
 
         <div className="grid md:grid-cols-2 gap-6">
-          <BookForm onAddBook={handleAddBook} addToast={addToast} />
+          <BookForm
+            ref={bookFormRef}
+            onAddBook={handleAddBook}
+            addToast={addToast}
+          />
+
           <UserForm
+            ref={userFormRef}
             users={users}
             onAddUser={handleAddUser}
             addToast={addToast}
           />
+
           <BookList books={books} onDeleteBook={handleDeleteBook} />
           <UserList
             users={users}

@@ -1,7 +1,7 @@
 "use client";
-import { useState } from "react";
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 
-export default function BookForm({ onAddBook, addToast }) {
+const BookForm = forwardRef(function BookForm({ onAddBook, addToast }, ref) {
   const [form, setForm] = useState({
     title: "",
     author: "",
@@ -9,6 +9,17 @@ export default function BookForm({ onAddBook, addToast }) {
     genre: "",
     total: "",
   });
+
+  const firstInputRef = useRef(null);
+
+  useImperativeHandle(ref, () => ({
+    reset() {
+      setForm({ title: "", author: "", isbn: "", genre: "", total: "" });
+    },
+    focusFirst() {
+      firstInputRef.current?.focus();
+    },
+  }));
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -18,7 +29,6 @@ export default function BookForm({ onAddBook, addToast }) {
   function handleSubmit(event) {
     event.preventDefault();
 
-    // Walidacja wymaganych pól
     if (
       !form.title ||
       !form.author ||
@@ -30,7 +40,6 @@ export default function BookForm({ onAddBook, addToast }) {
       return;
     }
 
-    // ISBN: dokładnie 13 cyfr po usunięciu spacji/myślników
     const cleanedIsbn = form.isbn.replace(/[\s-]/g, "");
     if (cleanedIsbn.length !== 13 || !/^\d{13}$/.test(cleanedIsbn)) {
       addToast("Podaj prawidłowy ISBN (dokładnie 13 cyfr)", "error");
@@ -50,9 +59,6 @@ export default function BookForm({ onAddBook, addToast }) {
       genre: form.genre.trim(),
       total: totalParsed,
     });
-
-    // Reset formularza
-    setForm({ title: "", author: "", isbn: "", genre: "", total: "" });
   }
 
   return (
@@ -65,6 +71,7 @@ export default function BookForm({ onAddBook, addToast }) {
       </h2>
 
       <input
+        ref={firstInputRef}
         name="title"
         type="text"
         value={form.title}
@@ -118,4 +125,6 @@ export default function BookForm({ onAddBook, addToast }) {
       </button>
     </form>
   );
-}
+});
+
+export default BookForm;
