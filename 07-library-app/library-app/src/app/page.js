@@ -8,6 +8,10 @@ import LoanManager from "../components/LoanManager";
 import Statistics from "../components/Statistics";
 import dynamic from "next/dynamic";
 import ReservationList from "../components/ReservationList";
+import ReviewFormA from "../components/ReviewFormA";
+import ReviewList from "../components/ReviewList";
+import OpinionForm from "../components/OpinionForm";
+import OpinionList from "../components/OpinionList";
 
 const ReservationForm = dynamic(() => import("../components/ReservationForm"), {
   ssr: false,
@@ -23,6 +27,8 @@ export default function Home() {
   const [loans, setLoans] = useState([]);
   const [toasts, setToasts] = useState([]);
   const [reservations, setReservations] = useState([]);
+  const [reviews, setReviews] = useState([]);
+  const [opinions, setOpinions] = useState([]);
   const bookFormRef = useRef(null);
   const userFormRef = useRef(null);
   const addOptimisticReservationRef = useRef(null);
@@ -188,6 +194,26 @@ export default function Home() {
     addToast("Anulowano rezerwację");
   }
 
+  function handleAddReview(review) {
+    setReviews((prev) => [review, ...prev]);
+    addToast("Dodano recenzję");
+  }
+
+  function handleDeleteReview(id) {
+    setReviews((prev) => prev.filter((r) => r.id !== id));
+    addToast("Usunięto recenzję");
+  }
+
+  function handleAddOpinion(opinion) {
+    setOpinions((prev) => [opinion, ...prev]);
+    addToast("Dodano opinię");
+  }
+
+  function handleDeleteOpinion(id) {
+    setOpinions((prev) => prev.filter((o) => o.id !== id));
+    addToast("Usunięto opinię");
+  }
+
   return (
     <main className="min-h-screen bg-neutral-950 text-neutral-100">
       <div className="max-w-7xl mx-auto p-6 space-y-6">
@@ -262,7 +288,18 @@ export default function Home() {
           }}
         />
 
+        <ReviewFormA books={books} onAddReview={handleAddReview} />
+
+        <ReviewList reviews={reviews} onDeleteReview={handleDeleteReview} />
+
         <ToastContainer toasts={toasts} onClose={removeToast} />
+
+        <OpinionForm books={books} onAddOpinion={handleAddOpinion} />
+
+        <OpinionList
+          opinions={opinions}
+          onDeleteOpinion={handleDeleteOpinion}
+        />
       </div>
     </main>
   );
