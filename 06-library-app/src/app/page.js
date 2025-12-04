@@ -113,6 +113,7 @@ export default function Home() {
           <BookList books={books} onDeleteBook={handleDeleteBook} />
         </section>
 
+        {/* Użytkownicy: formularz + lista obok siebie */}
         <section className="grid gap-6 md:grid-cols-2">
           <UserForm onAddUser={handleAddUser} existingUsers={users} />
           <UserList
@@ -122,6 +123,7 @@ export default function Home() {
           />
         </section>
 
+        {/* Wypożyczenia: formularz + aktywne wypożyczenia obok siebie */}
         <section className="mt-8">
           <LoanManager
             users={users}
