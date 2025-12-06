@@ -111,9 +111,9 @@ export default function LoanManager({
           </p>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full table-auto min-h-[140px]">
+            <table className="w-full table-auto border border-neutral-800 min-h-[120px]">
               <thead>
-                <tr className="text-left text-xs uppercase tracking-wide text-neutral-400 bg-neutral-950">
+                <tr className="text-left text-xs uppercase tracking-wide text-neutral-400 bg-neutral-900">
                   <th className="py-3 px-3 font-medium">Książka</th>
                   <th className="py-3 px-3 font-medium">Użytkownik</th>
                   <th className="py-3 px-3 font-medium">Data wypożyczenia</th>
@@ -124,7 +124,7 @@ export default function LoanManager({
                 {loans.map((loan) => (
                   <tr
                     key={loan.id}
-                    className="hover:bg-neutral-900 transition-colors"
+                    className="bg-neutral-950 hover:bg-neutral-900 transition-colors"
                   >
                     <td className="py-3 px-3 text-neutral-100 text-xs align-middle">
                       <div className="font-semibold">{loan.bookTitle}</div>

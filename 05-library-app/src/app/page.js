@@ -181,17 +181,19 @@ export default function Home() {
 
       <main className="flex-1 w-full">
         <div className="max-w-6xl mx-auto px-6 py-8 flex flex-col gap-6">
-          <div className="flex justify-end">
-            <button
-              type="button"
-              onClick={handleResetData}
-              className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-sm font-medium"
-            >
-              Resetuj dane
-            </button>
-          </div>
+          <div>
+            <Statistics books={books} users={users} loans={loans} />
 
-          <Statistics books={books} users={users} loans={loans} />
+            <div className="flex justify-end mt-4">
+              <button
+                type="button"
+                onClick={handleResetData}
+                className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-sm font-medium"
+              >
+                Resetuj dane
+              </button>
+            </div>
+          </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="flex flex-col gap-6">
