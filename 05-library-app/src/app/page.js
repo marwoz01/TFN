@@ -1,137 +1,134 @@
 "use client";
-
 import { useState } from "react";
-import BookForm from "../components/BookForm";
-import BookList from "../components/BookList";
-import UserForm from "../components/UserForm";
-import UserList from "../components/UserList";
-import LoanManager from "../components/LoanManager";
-import Statistics from "../components/Statistics";
+import BookForm from "@/components/BookForm";
+import BookList from "@/components/BookList";
+import UserForm from "@/components/UserForm";
+import UserList from "@/components/UserList";
+import LoanManager from "@/components/LoanManager";
+import Statistics from "@/components/Statistics";
 
 export default function Home() {
   const [books, setBooks] = useState([]);
   const [users, setUsers] = useState([]);
   const [loans, setLoans] = useState([]);
 
-  const handleAddBook = (bookData) => {
+  // Dodawanie książki
+  const handleAddBook = (newBook) => {
     setBooks((prevBooks) => [
       ...prevBooks,
       {
+        ...newBook,
         id: Date.now(),
-        title: bookData.title,
-        author: bookData.author,
-        isbn: bookData.isbn,
-        genre: bookData.genre,
-        total: bookData.total,
-        available: bookData.total,
+        available: newBook.total,
       },
     ]);
   };
 
+  // Usuwanie książki
   const handleDeleteBook = (bookId) => {
-    const hasActiveLoan = loans.some((loan) => loan.bookId === bookId);
-    if (hasActiveLoan) {
-      alert("Nie można usunąć książki, która jest aktualnie wypożyczona.");
-      return;
-    }
-    setBooks((prevBooks) => prevBooks.filter((book) => book.id !== bookId));
+    setBooks((prevBooks) => {
+      const bookToDelete = prevBooks.find((book) => book.id === bookId);
+      if (bookToDelete && bookToDelete.available < bookToDelete.total) {
+        alert("Nie można usunąć książki, która jest aktualnie wypożyczona");
+        return prevBooks;
+      }
+      return prevBooks.filter((book) => book.id !== bookId);
+    });
   };
 
-  const handleAddUser = (userData) => {
-    setUsers((prev) => [
-      ...prev,
-      {
-        id: Date.now(),
-        name: userData.name,
-        email: userData.email,
-      },
-    ]);
+  // Dodawanie użytkownika
+  const handleAddUser = (newUser) => {
+    setUsers((prevUsers) => [...prevUsers, newUser]);
   };
 
+  // Usuwanie użytkownika
   const handleDeleteUser = (userId) => {
-    const hasActiveLoan = loans.some((loan) => loan.userId === userId);
-    if (hasActiveLoan) {
-      alert("Nie można usunąć użytkownika z aktywnymi wypożyczeniami.");
-      return;
-    }
-    setUsers((prev) => prev.filter((user) => user.id !== userId));
+    setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
   };
 
-  const handleBorrowBook = (bookIdFromForm, userIdFromForm) => {
-    const bookId = Number(bookIdFromForm);
-    const userId = Number(userIdFromForm);
-
-    const book = books.find((b) => b.id === bookId);
-    const user = users.find((u) => u.id === userId);
-    if (!book || !user) return;
-
-    if (book.available <= 0) {
-      alert("Ta książka nie jest dostępna do wypożyczenia.");
-      return;
-    }
-
+  // Dodawanie wypożyczenia
+  const handleBorrowBook = (loanData) => {
     const newLoan = {
       id: Date.now(),
-      bookId,
-      userId,
-      bookTitle: book.title,
-      userName: user.name,
-      loanDate: new Date().toLocaleDateString(),
+      bookId: Number(loanData.bookId),
+      userId: Number(loanData.userId),
+      bookTitle: loanData.bookTitle,
+      userName: loanData.userName,
+      loanDate: loanData.loanDate,
     };
+    setLoans((prevLoans) => [...prevLoans, newLoan]);
 
-    setLoans((prev) => [...prev, newLoan]);
-
-    setBooks((prev) =>
-      prev.map((b) =>
-        b.id === bookId ? { ...b, available: b.available - 1 } : b
-      )
+    setBooks((prevBooks) =>
+      prevBooks.map((book) =>
+        book.id === loanData.bookId
+          ? { ...book, available: book.available - 1 }
+          : book,
+      ),
     );
   };
 
-  const handleReturnBook = (loanId) => {
-    const loan = loans.find((l) => l.id === loanId);
-    if (!loan) return;
-
-    setBooks((prev) =>
-      prev.map((b) =>
-        b.id === loan.bookId ? { ...b, available: b.available + 1 } : b
-      )
+  // Zwrot książki
+  const handleReturnBook = (loanId, bookId) => {
+    setLoans((prevLoans) =>
+      prevLoans.filter((loan) => loan.id !== Number(loanId)),
     );
 
-    setLoans((prev) => prev.filter((l) => l.id !== loanId));
+    setBooks((prevBooks) =>
+      prevBooks.map((book) =>
+        book.id === Number(bookId)
+          ? { ...book, available: book.available + 1 }
+          : book,
+      ),
+    );
   };
 
   return (
-    <main className="min-h-screen bg-zinc-900 text-zinc-200">
-      <div className="max-w-6xl mx-auto p-6">
-        <h1 className="text-3xl font-bold mb-4 text-blue-400">Biblioteka</h1>
+    <div className="min-h-screen bg-neutral-900 text-neutral-100 flex flex-col">
+      <header className="w-full border-b border-neutral-800 bg-neutral-900">
+        <div className="max-w-6xl mx-auto px-6 py-6 flex justify-center">
+          <h1 className="text-3xl font-semibold tracking-wide text-white">
+            Library App
+          </h1>
+        </div>
+      </header>
 
-        <Statistics books={books} users={users} loans={loans} />
+      <main className="flex-1 w-full">
+        <div className="max-w-6xl mx-auto px-6 py-8 flex flex-col gap-6">
+          <Statistics books={books} users={users} loans={loans} />
 
-        <section className="grid gap-6 md:grid-cols-2">
-          <BookForm onAddBook={handleAddBook} />
-          <BookList books={books} onDeleteBook={handleDeleteBook} />
-        </section>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="flex flex-col gap-6">
+              <section className="bg-neutral-900 border border-neutral-800 rounded-2xl shadow-xl p-6 min-h-[460px]">
+                <BookForm onAddBook={handleAddBook} />
+              </section>
 
-        <section className="grid gap-6 md:grid-cols-2">
-          <UserForm onAddUser={handleAddUser} existingUsers={users} />
-          <UserList
-            users={users}
-            loans={loans}
-            onDeleteUser={handleDeleteUser}
-          />
-        </section>
+              <section className="bg-neutral-900 border border-neutral-800 rounded-2xl shadow-xl p-6">
+                <BookList books={books} onDeleteBook={handleDeleteBook} />
+              </section>
+            </div>
 
-        <section className="mt-8">
-          <LoanManager
-            users={users}
-            books={books}
-            loans={loans}
-            onBorrowBook={handleBorrowBook}
-            onReturnBook={handleReturnBook}
-          />
-        </section>
-      </div>
-    </main>
+            <div className="flex flex-col gap-6">
+              <section className="bg-neutral-900 border border-neutral-800 rounded-2xl shadow-xl p-6 min-h-[460px]">
+                <UserForm onAddUser={handleAddUser} users={users} />
+              </section>
+
+              <section className="bg-neutral-900 border border-neutral-800 rounded-2xl shadow-xl p-6">
+                <UserList users={users} onDeleteUser={handleDeleteUser} />
+              </section>
+            </div>
+          </div>
+
+          <section className="bg-neutral-900 border border-neutral-800 rounded-2xl shadow-xl p-6">
+            <LoanManager
+              books={books}
+              users={users}
+              loans={loans}
+              onBorrowBook={handleBorrowBook}
+              onReturnBook={handleReturnBook}
+            />
+          </section>
+        </div>
+      </main>
+    </div>
   );
 }

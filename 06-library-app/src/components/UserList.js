@@ -1,48 +1,66 @@
-export default function UserList({ users, loans, onDeleteUser }) {
+"use client";
+
+export default function UserList({ users = [], onDeleteUser }) {
   return (
-    <div className="bg-zinc-900 p-5 rounded-xl border border-zinc-800 shadow-lg mt-6">
-      <h2 className="text-xl font-semibold text-blue-400 mb-4">
+    <div className="space-y-5">
+      <h2 className="text-lg font-semibold tracking-wide text-neutral-100">
         Lista użytkowników
       </h2>
 
-      {users.length === 0 && (
-        <p className="text-zinc-400">Brak zarejestrowanych użytkowników.</p>
+      {users.length === 0 ? (
+        <p className="text-sm text-neutral-500">
+          Brak użytkowników do wyświetlenia.
+        </p>
+      ) : (
+        <div className="overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950/70 shadow-2xl">
+          <table className="w-full table-auto min-h-[160px]">
+            <thead>
+              <tr className="text-left text-xs uppercase tracking-wide text-neutral-400 bg-neutral-900">
+                <th className="py-3 px-3 font-medium">Użytkownik</th>
+                <th className="py-3 px-3 font-medium">Email</th>
+                <th className="py-3 px-3 font-medium">Wypożyczenia</th>
+                <th className="py-3 px-3 font-medium">Akcje</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-neutral-800">
+              {users.map((user) => (
+                <tr
+                  key={user.id}
+                  className="hover:bg-neutral-900 transition-colors"
+                >
+                  <td className="py-3 px-3 text-neutral-100 align-middle text-xs">
+                    <div className="font-semibold">{user.name}</div>
+                  </td>
+                  <td className="py-3 px-3 text-neutral-300 align-middle text-xs">
+                    {user.email}
+                  </td>
+                  <td className="py-3 px-3 text-neutral-400 text-xs">
+                    {user.loans?.length || 0}
+                  </td>
+                  <td className="py-3 px-3">
+                    <button
+                      onClick={() => onDeleteUser(user.id)}
+                      disabled={user.loans?.length > 0}
+                      className={`text-xs px-3 py-1 rounded-lg transition ${
+                        user.loans?.length > 0
+                          ? "bg-neutral-800 text-neutral-500 cursor-not-allowed"
+                          : "bg-red-600 hover:bg-red-700 text-white"
+                      }`}
+                      title={
+                        user.loans?.length > 0
+                          ? "Nie można usunąć użytkownika z aktywnymi wypożyczeniami"
+                          : "Usuń użytkownika"
+                      }
+                    >
+                      Usuń
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
-
-      <div className="flex flex-col gap-3">
-        {users.map((user) => {
-          const activeLoansCount = loans.filter(
-            (loan) => loan.userId === user.id
-          ).length;
-
-          return (
-            <div
-              key={user.id}
-              className="bg-zinc-800 border border-zinc-700 p-3 rounded-md flex flex-col gap-1"
-            >
-              <p className="text-zinc-200 font-semibold">{user.name}</p>
-              <p className="text-zinc-400 text-sm">{user.email}</p>
-
-              <p className="text-zinc-300 text-sm mt-1">
-                Aktywne wypożyczenia:{" "}
-                <span className="text-blue-400">{activeLoansCount}</span>
-              </p>
-
-              {activeLoansCount === 0 && (
-                <div className="mt-2">
-                  <button
-                    onClick={() => onDeleteUser(user.id)}
-                    className="px-3 py-1 rounded-md text-sm bg-zinc-700 text-zinc-100
-                               hover:bg-zinc-600 transition-colors"
-                  >
-                    Usuń
-                  </button>
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
     </div>
   );
 }

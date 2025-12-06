@@ -1,75 +1,84 @@
+"use client";
+
 import { useState } from "react";
 
-export default function UserForm({ onAddUser, existingUsers }) {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+export default function UserForm({ onAddUser, users = [] }) {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+  });
   const [error, setError] = useState("");
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (error) setError("");
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setError("");
 
-    if (!name || !email) {
-      setError("Wszystkie pola są wymagane.");
+    if (!formData.name.trim() || !formData.email) {
+      setError("Wszystkie pola są wymagane");
       return;
     }
 
-    if (!email.includes("@")) {
-      setError("Email musi zawierać znak @.");
+    if (!formData.email.includes("@")) {
+      setError("Email musi zawierać znak @");
       return;
     }
 
-    const emailExists = existingUsers.some((u) => u.email === email);
-    if (emailExists) {
-      setError("Użytkownik z takim emailem już istnieje.");
+    if (users.some((user) => user.email === formData.email)) {
+      setError("Podany adres email istnieje już w systemie");
       return;
     }
 
     onAddUser({
-      name,
-      email,
+      id: Date.now(),
+      name: formData.name,
+      email: formData.email,
     });
-
-    setName("");
-    setEmail("");
+    setFormData({ name: "", email: "" });
+    setError("");
   };
 
+  const inputBase =
+    "w-full rounded-xl bg-neutral-900/80 border border-neutral-700 px-4 py-2.5 text-sm text-neutral-100 placeholder-neutral-500 focus:outline-none focus:border-cyan-400 transition";
+
   return (
-    <div className="bg-zinc-900 p-5 rounded-xl border border-zinc-800 shadow-lg mt-6">
-      <h2 className="text-xl font-semibold text-blue-400 mb-4">
-        Dodaj użytkownika
+    <div className="space-y-5">
+      <h2 className="text-lg font-semibold tracking-wide text-neutral-100">
+        Dodaj nowego użytkownika
       </h2>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+      {error && <p className="text-sm text-red-500 mb-4">{error}</p>}
+
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block mb-1 text-zinc-300">Imię i nazwisko</label>
           <input
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-md p-2 text-zinc-200
-                       focus:outline-none focus:border-blue-500"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            type="text"
+            name="name"
+            placeholder="Imię i nazwisko"
+            value={formData.name}
+            onChange={handleChange}
+            className={inputBase}
           />
         </div>
-
         <div>
-          <label className="block mb-1 text-zinc-300">Email</label>
           <input
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-md p-2 text-zinc-200
-                       focus:outline-none focus:border-blue-500"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            type="email"
+            name="email"
+            placeholder="Adres e-mail"
+            value={formData.email}
+            onChange={handleChange}
+            className={inputBase}
           />
         </div>
-
-        {error && <p className="text-sm text-red-500 mt-1">{error}</p>}
-
         <button
           type="submit"
-          className="mt-2 inline-flex justify-center items-center px-4 py-2 rounded-md
-                     bg-blue-600 text-white font-medium hover:bg-blue-500
-                     transition-colors"
+          className="w-full mt-2 rounded-xl bg-cyan-600 hover:bg-cyan-400 text-white font-semibold py-2.5 text-sm tracking-wide transition"
         >
-          Dodaj użytkownika
+          Dodaj
         </button>
       </form>
     </div>

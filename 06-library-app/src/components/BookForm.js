@@ -1,117 +1,121 @@
-import { useState } from "react";
-import ToastContainer from "../components/ToastContainer";
+"use client";
 
-export default function BookForm({ onAddBook, addToast }) {
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [isbn, setIsbn] = useState("");
-  const [genre, setGenre] = useState("");
-  const [total, setTotal] = useState("");
+import { useState } from "react";
+
+export default function BookForm({ onAddBook }) {
+  const [formData, setFormData] = useState({
+    title: "",
+    author: "",
+    isbn: "",
+    genre: "",
+    total: "",
+  });
   const [error, setError] = useState("");
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (error) setError("");
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setError("");
-
-    if (!title || !author || !isbn || !genre || !total) {
-      setError("Wszystkie pola są wymagane.");
+    if (Object.values(formData).some((field) => !field)) {
+      setError("Wszystkie pola są wymagane");
       return;
     }
-
-    if (isbn.length !== 13) {
-      setError("ISBN musi mieć dokładnie 13 znaków.");
+    if (formData.isbn.length !== 13) {
+      setError("ISBN musi mieć 13 znaków");
       return;
     }
-
-    const totalNumber = Number(total);
-
-    if (Number.isNaN(totalNumber) || totalNumber <= 0) {
-      setError("Liczba egzemplarzy musi być większa od zera.");
+    if (Number(formData.total) <= 0) {
+      setError("Liczba egzemplarzy musi być większa od zera");
       return;
     }
-
     onAddBook({
-      title,
-      author,
-      isbn,
-      genre,
-      total: totalNumber,
+      ...formData,
+      total: Number(formData.total),
+      available: Number(formData.total),
     });
-
-    setTitle("");
-    setAuthor("");
-    setIsbn("");
-    setGenre("");
-    setTotal("");
+    setFormData({
+      title: "",
+      author: "",
+      isbn: "",
+      genre: "",
+      total: "",
+    });
+    setError("");
   };
 
+  const inputBase =
+    "w-full rounded-xl bg-neutral-900/80 border border-neutral-700 px-4 py-2.5 text-sm text-neutral-100 placeholder-neutral-500 focus:outline-none focus:border-cyan-400 transition";
+
   return (
-    <div className="bg-zinc-900 p-5 rounded-xl border border-zinc-800 shadow-lg">
-      <h2 className="text-xl font-semibold text-blue-400 mb-4">
-        Dodaj książkę
+    <div className="space-y-5">
+      <h2 className="text-lg font-semibold tracking-wide text-neutral-100">
+        Dodaj nową książkę
       </h2>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+      {error && <p className="text-sm text-red-500">{error}</p>}
+
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block mb-1 text-zinc-300">Tytuł</label>
           <input
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-md p-2 text-zinc-200
-                       focus:outline-none focus:border-blue-500"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            type="text"
+            name="title"
+            placeholder="Tytuł"
+            value={formData.title}
+            onChange={handleChange}
+            className={inputBase}
           />
         </div>
-
         <div>
-          <label className="block mb-1 text-zinc-300">Autor</label>
           <input
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-md p-2 text-zinc-200
-                       focus:outline-none focus:border-blue-500"
-            value={author}
-            onChange={(e) => setAuthor(e.target.value)}
+            type="text"
+            name="author"
+            placeholder="Autor"
+            value={formData.author}
+            onChange={handleChange}
+            className={inputBase}
           />
         </div>
-
         <div>
-          <label className="block mb-1 text-zinc-300">ISBN (13 cyfr)</label>
           <input
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-md p-2 text-zinc-200
-                       focus:outline-none focus:border-blue-500"
-            value={isbn}
-            onChange={(e) => setIsbn(e.target.value)}
+            type="text"
+            name="isbn"
+            placeholder="ISBN (13 cyfr)"
+            value={formData.isbn}
+            onChange={handleChange}
+            maxLength="13"
+            className={inputBase}
           />
         </div>
-
         <div>
-          <label className="block mb-1 text-zinc-300">Gatunek</label>
           <input
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-md p-2 text-zinc-200
-                       focus:outline-none focus:border-blue-500"
-            value={genre}
-            onChange={(e) => setGenre(e.target.value)}
+            type="text"
+            name="genre"
+            placeholder="Gatunek"
+            value={formData.genre}
+            onChange={handleChange}
+            className={inputBase}
           />
         </div>
-
         <div>
-          <label className="block mb-1 text-zinc-300">Liczba egzemplarzy</label>
           <input
             type="number"
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-md p-2 text-zinc-200
-                       focus:outline-none focus:border-blue-500"
-            value={total}
-            onChange={(e) => setTotal(e.target.value)}
+            name="total"
+            min="1"
+            placeholder="Liczba egzemplarzy"
+            value={formData.total}
+            onChange={handleChange}
+            className={inputBase}
           />
         </div>
-
-        {error && <p className="text-sm text-red-500 mt-1">{error}</p>}
-
         <button
           type="submit"
-          className="mt-2 inline-flex justify-center items-center px-4 py-2 rounded-md
-                     bg-blue-600 text-white font-medium hover:bg-blue-500
-                     transition-colors"
+          className="w-full mt-2 rounded-xl bg-cyan-600 hover:bg-cyan-400 text-white font-semibold py-2.5 text-sm tracking-wide transition"
         >
-          Dodaj książkę
+          Dodaj
         </button>
       </form>
     </div>

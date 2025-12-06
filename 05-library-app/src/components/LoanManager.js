@@ -1,72 +1,91 @@
+"use client";
+
 import { useState } from "react";
 
 export default function LoanManager({
-  users,
-  books,
-  loans,
+  books = [],
+  users = [],
+  loans = [],
   onBorrowBook,
   onReturnBook,
 }) {
-  const [selectedUser, setSelectedUser] = useState("");
   const [selectedBook, setSelectedBook] = useState("");
+  const [selectedUser, setSelectedUser] = useState("");
   const [error, setError] = useState("");
 
-  const handleSubmit = (e) => {
+  const availableBooks = books.filter((book) => book.available > 0);
+
+  const handleBorrow = (e) => {
     e.preventDefault();
     setError("");
 
-    if (!selectedUser || !selectedBook) {
-      setError("Musisz wybrać użytkownika i książkę.");
+    if (!selectedUser) {
+      setError("Wybierz użytkownika");
       return;
     }
 
-    onBorrowBook(selectedBook, selectedUser);
+    if (!selectedBook) {
+      setError("Wybierz książkę");
+      return;
+    }
 
-    setSelectedUser("");
+    const book = books.find((b) => b.id === Number(selectedBook));
+    if (!book || book.available <= 0) {
+      setError("Wybrana książka nie jest dostępna");
+      return;
+    }
+
+    onBorrowBook({
+      bookId: Number(selectedBook),
+      userId: Number(selectedUser),
+      bookTitle: book.title,
+      userName: users.find((u) => u.id === Number(selectedUser))?.name || "",
+      loanDate: new Date().toISOString(),
+    });
+
     setSelectedBook("");
+    setSelectedUser("");
   };
 
   return (
-    <div className="grid gap-6 md:grid-cols-2">
-      <div className="bg-zinc-900 p-5 rounded-xl border border-zinc-800 shadow-lg">
-        <h2 className="text-xl font-semibold text-blue-400 mb-4">
-          Wypożycz książkę
-        </h2>
+    <div className="space-y-6">
+      <h2 className="text-lg font-semibold tracking-wide text-neutral-100">
+        Zarządzanie wypożyczeniami
+      </h2>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <div className="bg-neutral-900/80 border border-neutral-800 rounded-2xl shadow-2xl p-6">
+        <h3 className="text-md font-medium text-neutral-200 mb-4">
+          Nowe wypożyczenie
+        </h3>
+
+        <form onSubmit={handleBorrow} className="space-y-4">
           <div>
-            <label className="block mb-1 text-zinc-300">Użytkownik</label>
             <select
-              className="w-full bg-zinc-800 border border-zinc-700 rounded-md p-2 text-zinc-200
-                         focus:outline-none focus:border-blue-500"
               value={selectedUser}
               onChange={(e) => setSelectedUser(e.target.value)}
+              className="w-full rounded-xl bg-neutral-900/80 border border-neutral-700 px-4 py-2.5 text-sm text-neutral-100 focus:outline-none focus:border-cyan-400 transition"
             >
               <option value="">Wybierz użytkownika</option>
-              {users.map((u) => (
-                <option key={u.id} value={u.id}>
-                  {u.name} ({u.email})
+              {users.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.name} ({user.email})
                 </option>
               ))}
             </select>
           </div>
 
           <div>
-            <label className="block mb-1 text-zinc-300">Książka</label>
             <select
-              className="w-full bg-zinc-800 border border-zinc-700 rounded-md p-2 text-zinc-200
-                         focus:outline-none focus:border-blue-500"
               value={selectedBook}
               onChange={(e) => setSelectedBook(e.target.value)}
+              className="w-full rounded-xl bg-neutral-900/80 border border-neutral-700 px-4 py-2.5 text-sm text-neutral-100 focus:outline-none focus:border-cyan-400 transition"
             >
               <option value="">Wybierz książkę</option>
-              {books
-                .filter((book) => book.available > 0)
-                .map((book) => (
-                  <option key={book.id} value={book.id}>
-                    {book.title} — dostępne {book.available}/{book.total}
-                  </option>
-                ))}
+              {availableBooks.map((book) => (
+                <option key={book.id} value={book.id}>
+                  {book.title} - {book.author} (Dostępne: {book.available})
+                </option>
+              ))}
             </select>
           </div>
 
@@ -74,46 +93,62 @@ export default function LoanManager({
 
           <button
             type="submit"
-            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-500 transition-colors"
+            className="w-full mt-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-semibold py-2.5 text-sm tracking-wide transition"
           >
-            Wypożycz
+            Wypożycz książkę
           </button>
         </form>
       </div>
 
-      <div className="bg-zinc-900 p-5 rounded-xl border border-zinc-800 shadow-lg">
-        <h2 className="text-xl font-semibold text-blue-400 mb-4">
+      <div className="overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900 shadow-2xl">
+        <h3 className="text-md font-medium text-neutral-200 p-6 pb-0 mb-4">
           Aktywne wypożyczenia
-        </h2>
+        </h3>
 
-        {loans.length === 0 && (
-          <p className="text-zinc-400">Brak aktywnych wypożyczeń.</p>
+        {loans.length === 0 ? (
+          <p className="p-6 text-sm text-neutral-500">
+            Brak aktywnych wypożyczeń.
+          </p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full table-auto min-h-[140px]">
+              <thead>
+                <tr className="text-left text-xs uppercase tracking-wide text-neutral-400 bg-neutral-950">
+                  <th className="py-3 px-3 font-medium">Książka</th>
+                  <th className="py-3 px-3 font-medium">Użytkownik</th>
+                  <th className="py-3 px-3 font-medium">Data wypożyczenia</th>
+                  <th className="py-3 px-3 font-medium">Akcje</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-neutral-800">
+                {loans.map((loan) => (
+                  <tr
+                    key={loan.id}
+                    className="hover:bg-neutral-900 transition-colors"
+                  >
+                    <td className="py-3 px-3 text-neutral-100 text-xs align-middle">
+                      <div className="font-semibold">{loan.bookTitle}</div>
+                    </td>
+                    <td className="py-3 px-3 text-neutral-300 text-xs align-middle">
+                      {loan.userName}
+                    </td>
+                    <td className="py-3 px-3 text-neutral-300 text-xs align-middle">
+                      {new Date(loan.loanDate).toLocaleDateString()}
+                    </td>
+                    <td className="py-3 px-3 align-middle">
+                      <button
+                        onClick={() => onReturnBook(loan.id, loan.bookId)}
+                        className="px-3 py-1 rounded-lg bg-green-600 hover:bg-green-700 text-white text-xs font-medium transition"
+                      >
+                        Zwróć
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
-
-        <div className="flex flex-col gap-3">
-          {loans.map((loan) => (
-            <div
-              key={loan.id}
-              className="bg-zinc-800 border border-zinc-700 p-3 rounded-md flex justify-between items-center"
-            >
-              <div>
-                <p className="text-zinc-200 font-semibold">{loan.bookTitle}</p>
-                <p className="text-zinc-400 text-sm">
-                  Użytkownik: {loan.userName}
-                </p>
-                <p className="text-zinc-500 text-sm">Data: {loan.loanDate}</p>
-              </div>
-
-              <button
-                onClick={() => onReturnBook(loan.id)}
-                className="px-3 py-1 rounded-md text-sm bg-zinc-700 text-zinc-100
-                           hover:bg-zinc-600 transition-colors"
-              >
-                Zwróć
-              </button>
-            </div>
-          ))}
-        </div>
       </div>
     </div>
   );
