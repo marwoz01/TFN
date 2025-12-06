@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 
-export default function BookForm({ onAddBook }) {
+const BookForm = forwardRef(({ onAddBook }, ref) => {
   const [formData, setFormData] = useState({
     title: "",
     author: "",
@@ -12,6 +12,24 @@ export default function BookForm({ onAddBook }) {
   });
   const [error, setError] = useState("");
 
+  const firstInputRef = useRef(null);
+
+  useImperativeHandle(ref, () => ({
+    reset: () => {
+      setFormData({
+        title: "",
+        author: "",
+        isbn: "",
+        genre: "",
+        total: "",
+      });
+      setError("");
+    },
+    focusFirst: () => {
+      firstInputRef.current?.focus();
+    },
+  }));
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -20,6 +38,7 @@ export default function BookForm({ onAddBook }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     if (Object.values(formData).some((field) => !field)) {
       setError("Wszystkie pola są wymagane");
       return;
@@ -32,11 +51,13 @@ export default function BookForm({ onAddBook }) {
       setError("Liczba egzemplarzy musi być większa od zera");
       return;
     }
+
     onAddBook({
       ...formData,
       total: Number(formData.total),
       available: Number(formData.total),
     });
+
     setFormData({
       title: "",
       author: "",
@@ -61,6 +82,7 @@ export default function BookForm({ onAddBook }) {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <input
+            ref={firstInputRef}
             type="text"
             name="title"
             placeholder="Tytuł"
@@ -86,7 +108,7 @@ export default function BookForm({ onAddBook }) {
             placeholder="ISBN (13 cyfr)"
             value={formData.isbn}
             onChange={handleChange}
-            maxLength="13"
+            maxLength={13}
             className={inputBase}
           />
         </div>
@@ -104,7 +126,7 @@ export default function BookForm({ onAddBook }) {
           <input
             type="number"
             name="total"
-            min="1"
+            min={1}
             placeholder="Liczba egzemplarzy"
             value={formData.total}
             onChange={handleChange}
@@ -120,4 +142,6 @@ export default function BookForm({ onAddBook }) {
       </form>
     </div>
   );
-}
+});
+
+export default BookForm;

@@ -1,13 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 
-export default function UserForm({ onAddUser, users = [] }) {
+const UserForm = forwardRef(({ onAddUser, users = [] }, ref) => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
   });
   const [error, setError] = useState("");
+
+  const firstInputRef = useRef(null);
+
+  useImperativeHandle(ref, () => ({
+    reset: () => {
+      setFormData({ name: "", email: "" });
+      setError("");
+    },
+    focusFirst: () => {
+      firstInputRef.current?.focus();
+    },
+  }));
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -38,6 +50,7 @@ export default function UserForm({ onAddUser, users = [] }) {
       name: formData.name,
       email: formData.email,
     });
+
     setFormData({ name: "", email: "" });
     setError("");
   };
@@ -56,6 +69,7 @@ export default function UserForm({ onAddUser, users = [] }) {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <input
+            ref={firstInputRef}
             type="text"
             name="name"
             placeholder="Imię i nazwisko"
@@ -83,4 +97,6 @@ export default function UserForm({ onAddUser, users = [] }) {
       </form>
     </div>
   );
-}
+});
+
+export default UserForm;

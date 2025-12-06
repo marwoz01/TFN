@@ -13,7 +13,7 @@ export default function UserList({ users = [], onDeleteUser }) {
         </p>
       ) : (
         <div className="overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950/70 shadow-2xl">
-          <table className="w-full table-auto min-h-[160px]">
+          <table className="w-full table-auto min-h-[120px]">
             <thead>
               <tr className="text-left text-xs uppercase tracking-wide text-neutral-400 bg-neutral-900">
                 <th className="py-3 px-3 font-medium">Użytkownik</th>
