@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useOptimistic } from "react";
 import BookForm from "@/components/BookForm";
 import BookList from "@/components/BookList";
 import UserForm from "@/components/UserForm";
@@ -8,6 +8,12 @@ import UserList from "@/components/UserList";
 import LoanManager from "@/components/LoanManager";
 import Statistics from "@/components/Statistics";
 import ToastContainer from "@/components/ToastContainer";
+import ReservationForm from "@/components/ReservationForm";
+import ReservationList from "@/components/ReservationList";
+import ReviewFormA from "@/components/ReviewFormA";
+import ReviewList from "@/components/ReviewList";
+import OpinionForm from "@/components/OpinionForm";
+import OpinionList from "@/components/OpinionList";
 
 export default function Home() {
   // Stany
@@ -15,6 +21,9 @@ export default function Home() {
   const [users, setUsers] = useState([]);
   const [loans, setLoans] = useState([]);
   const [toasts, setToasts] = useState([]);
+  const [reservations, setReservations] = useState([]);
+  const [reviews, setReviews] = useState([]);
+  const [opinions, setOpinions] = useState([]);
 
   // Refy do formularzy
   const bookFormRef = useRef(null);
@@ -48,23 +57,20 @@ export default function Home() {
     localStorage.setItem("library-loans", JSON.stringify(loans));
   }, [loans]);
 
-  // Dodanie toasta
-  const addToast = (message, type = "success", duration = 3000) => {
-    setToasts((prev) => [
-      ...prev,
-      {
-        id: Date.now(),
-        message,
-        type,
-        duration,
-      },
-    ]);
-  };
+  const [optimisticReservations, addOptimisticReservation] = useOptimistic(
+    reservations,
+    (current, reservation) => {
+      const index = current.findIndex((r) => r.id === reservation.id);
+      if (index === -1) {
+        return [...current, reservation];
+      }
+      const copy = [...current];
+      copy[index] = reservation;
+      return copy;
+    },
+  );
 
-  // Zamknięcie toasta
-  const handleCloseToast = (id) => {
-    setToasts((prev) => prev.filter((t) => t.id !== id));
-  };
+  // Handlery
 
   // Dodawanie książki
   const handleAddBook = (newBook) => {
@@ -138,6 +144,7 @@ export default function Home() {
       userName: loanData.userName,
       loanDate: loanData.loanDate,
     };
+
     setLoans((prevLoans) => [...prevLoans, newLoan]);
 
     setBooks((prevBooks) =>
@@ -147,6 +154,7 @@ export default function Home() {
           : book,
       ),
     );
+
     addToast("Książka została wypożyczona", "success");
   };
 
@@ -163,7 +171,66 @@ export default function Home() {
           : book,
       ),
     );
+
     addToast("Książka została zwrócona", "success");
+  };
+
+  // Dodanie rezerwacji
+  const handleReservationAdded = (reservation) => {
+    setReservations((prev) => {
+      const index = prev.findIndex((r) => r.id === reservation.id);
+      if (index === -1) {
+        return [...prev, reservation];
+      }
+      const copy = [...prev];
+      copy[index] = reservation;
+      return copy;
+    });
+  };
+
+  // Usunięcie / anulowanie rezerwacji
+  const handleCancelReservation = (id) => {
+    setReservations((prev) =>
+      prev.map((r) => (r.id === id ? { ...r, status: "cancelled" } : r)),
+    );
+  };
+
+  // Dodanie recenzji
+  const handleAddReview = (review) => {
+    setReviews((prev) => [review, ...prev]);
+  };
+
+  // Usunięcie recenzji
+  const handleDeleteReview = (id) => {
+    setReviews((prev) => prev.filter((r) => r.id !== id));
+  };
+
+  // Dodawanie opinii
+  const handleAddOpinion = (opinion) => {
+    setOpinions((prev) => [opinion, ...prev]);
+  };
+
+  // Usuwanie opinii
+  const handleDeleteOpinion = (id) => {
+    setOpinions((prev) => prev.filter((o) => o.id !== id));
+  };
+
+  // Dodanie toasta
+  const addToast = (message, type = "success", duration = 3000) => {
+    setToasts((prev) => [
+      ...prev,
+      {
+        id: Date.now(),
+        message,
+        type,
+        duration,
+      },
+    ]);
+  };
+
+  // Zamknięcie toasta
+  const handleCloseToast = (id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
   };
 
   // Reset danych
@@ -239,6 +306,40 @@ export default function Home() {
               loans={loans}
               onBorrowBook={handleBorrowBook}
               onReturnBook={handleReturnBook}
+            />
+          </section>
+
+          <section className="bg-neutral-900 border border-neutral-800 rounded-2xl shadow-xl p-6">
+            <ReservationForm
+              books={books}
+              onReservationAdded={handleReservationAdded}
+              onOptimisticReservation={addOptimisticReservation}
+            />
+          </section>
+
+          <section className="bg-neutral-900 border border-neutral-800 rounded-2xl shadow-xl p-6">
+            <ReservationList
+              reservations={optimisticReservations}
+              onCancelReservation={handleCancelReservation}
+            />
+          </section>
+
+          <section className="bg-neutral-900 border border-neutral-800 rounded-2xl shadow-xl p-6">
+            <ReviewFormA books={books} onAddReview={handleAddReview} />
+          </section>
+
+          <section className="bg-neutral-900 border border-neutral-800 rounded-2xl shadow-xl p-6">
+            <ReviewList reviews={reviews} onDeleteReview={handleDeleteReview} />
+          </section>
+
+          <section className="bg-neutral-900 border border-neutral-800 rounded-2xl shadow-xl p-6">
+            <OpinionForm books={books} onAddOpinion={handleAddOpinion} />
+          </section>
+
+          <section className="bg-neutral-900 border border-neutral-800 rounded-2xl shadow-xl p-6">
+            <OpinionList
+              opinions={opinions}
+              onDeleteOpinion={handleDeleteOpinion}
             />
           </section>
         </div>
